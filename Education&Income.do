@@ -4,7 +4,7 @@
 clear all
 
 * 1. Data
-import delimited using "ACS_2024_Final_15000.csv", clear varnames(1) case(lower) encoding("utf-8")
+import delimited using "输入数据/ACS_2024_Final_15000.csv", clear varnames(1) case(lower) encoding("utf-8")
 
 * Sample restrictions
 keep if inrange(agep,25,64)
@@ -38,14 +38,7 @@ assert employed == 1
 assert pincp > 0 & !missing(pincp)
 count
 
-save "education_income_cleaned.dta", replace
-
 * 2. Regressions
-use "education_income_cleaned.dta", clear
-
-describe
-tab schl, missing
-sum pincp wagp agep
 
 * Method 1: Dummy variables
 * D1: Education only
@@ -53,11 +46,11 @@ reg ln_income master professional doctorate, vce(robust)
 est store D1
 
 * D2: Add age and gender
-reg ln_income master professional doctorate c.agep c.age2 female, vce(robust)
+reg ln_income master professional doctorate c.agep female, vce(robust)
 est store D2
 
 * D3: Add other controls
-reg ln_income master professional doctorate c.agep c.age2 female disability i.rac1p hispanic i.state , vce(robust)
+reg ln_income master professional doctorate c.agep female disability i.rac1p hispanic i.state , vce(robust)
 est store D3
 
 * Joint test of education dummies
@@ -83,11 +76,11 @@ reg ln_income c.edu_years, vce(robust)
 est store C1
 
 * C2: Add age and gender
-reg ln_income c.edu_years c.agep c.age2 female, vce(robust)
+reg ln_income c.edu_years c.agep female, vce(robust)
 est store C2
 
 * C3: Add other controls
-reg ln_income c.edu_years c.agep c.age2 female disability i.rac1p hispanic i.state, vce(robust)
+reg ln_income c.edu_years c.agep female disability i.rac1p hispanic i.state, vce(robust)
 est store C3
 
 * Test education-years coefficient in each model
